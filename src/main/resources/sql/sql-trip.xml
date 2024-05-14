@@ -1,0 +1,981 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 현재 파일이 MyBatis를 사용한 SQL 쿼리가 있는 xml 파일임을 나타내는 표시 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bitc.gotrip.mapper.TripMapper">
+
+    <select id="selectTripList" resultType="com.bitc.gotrip.dto.TripDto">
+       <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <select id="selectTripListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+        ORDER BY
+            hit_cnt desc
+        ]]>
+    </select>
+    <select id="selectTripSkyListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+        AND
+            trip_category_pk = 3
+        ]]>
+    </select>
+    <select id="selectTripSeaListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+        AND
+            trip_category_pk = 2
+        ]]>
+    </select>
+    <select id="selectTripMouListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+        AND
+            trip_category_pk = 1
+        ]]>
+    </select>
+
+    <select id="selectFileList" resultType="com.bitc.gotrip.dto.FileDto">
+       <![CDATA[
+        SELECT
+            stored_file_path, original_file_name, file_size, pk_num
+        FROM
+            file
+        WHERE
+            deleted_yn = 'N'
+        AND
+            table_num = #{tableNum}
+        ]]>
+    </select>
+
+<!--    <select id="selectThumFileList" resultType="com.bitc.gotrip.dto.FileDto">-->
+<!--       <![CDATA[-->
+<!--        SELECT-->
+<!--            stored_file_path, original_file_name, file_size, pk_num-->
+<!--        FROM-->
+<!--            file-->
+<!--        WHERE-->
+<!--            deleted_yn = 'N'-->
+<!--        GROUP BY-->
+<!--            pk_num-->
+
+<!--        ]]>-->
+<!--    </select>-->
+
+    <select id="selectThumFileList" parameterType="int" resultType="com.bitc.gotrip.dto.FileDto">
+       <![CDATA[
+        SELECT
+            stored_file_path, original_file_name, file_size, pk_num
+        FROM
+            file
+        WHERE
+            deleted_yn = 'N'
+        AND
+            pk_num = #{pkNum}
+        AND
+            table_num = 0
+        GROUP BY
+            pk_num
+        ]]>
+    </select>
+
+
+    <insert id="insertTrip" parameterType="com.bitc.gotrip.dto.TripDto" useGeneratedKeys="true" keyProperty="pkNum">
+        <![CDATA[
+        INSERT INTO
+            trip (trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, trip_latitude, trip_hardness, trip_create)
+        VALUES
+            (#{tripCategoryPk}, #{tripRegionPk}, #{tripName}, #{tripPrice}, #{tripContents}, #{tripLatitude}, #{tripHardness}, NOW())
+        ]]>
+    </insert>
+
+    <insert id="insertFileList" parameterType="com.bitc.gotrip.dto.FileDto">
+        <![CDATA[
+            INSERT INTO
+                file (table_num, pk_num, original_file_name, stored_file_path, file_size)
+            VALUES
+        ]]>
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.tableNum},
+            #{item.pkNum},
+            #{item.originalFileName},
+            #{item.storedFilePath},
+            #{item.fileSize}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="selectTripDetail" resultType="com.bitc.gotrip.dto.TripDto" parameterType="int">
+        <![CDATA[
+        SELECT
+            pk_num, trip_name, trip_price, trip_contents, trip_latitude, trip_hardness, trip_category_pk, trip_region_pk, hit_cnt
+        FROM
+            trip
+        WHERE
+            pk_num = #{pkNum}
+        AND
+            deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <select id="selectFileDetail" resultType="com.bitc.gotrip.dto.FileDto" parameterType="int">
+        <![CDATA[
+        SELECT
+            file_pk, pk_num, original_file_name, stored_file_path
+        FROM
+            file
+        WHERE
+            pk_num = #{pkNum}
+        AND
+            table_num = 0
+        AND
+            deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <select id="selectTripDetailList" resultType="com.bitc.gotrip.dto.TripDto" parameterType="int">
+        <![CDATA[
+        SELECT
+            pk_num, trip_name, trip_price, trip_contents, trip_latitude, trip_hardness, trip_category_pk, trip_region_pk
+        FROM
+            trip
+        WHERE
+            pk_num = #{pkNum}
+        AND
+            deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <select id="selectTripFileList" parameterType="int" resultType="com.bitc.gotrip.dto.FileDto">
+        <![CDATA[
+        SELECT
+            file_pk, pk_num, original_file_name, stored_file_path, FORMAT(ROUND(file_size / 1024), 0) AS file_size
+        FROM
+            file
+        WHERE
+            pk_num = #{pkNum}
+        AND
+            table_num = 0
+        AND
+            deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <update id="tripUpdate" parameterType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        UPDATE
+            trip
+        SET
+            trip_name = #{tripName},trip_category_pk = #{tripCategoryPk}, trip_region_pk = #{tripRegionPk}, trip_price = #{tripPrice}, trip_contents = #{tripContents}, trip_latitude = #{tripLatitude}, trip_hardness = #{tripHardness}, trip_update = NOW()
+        WHERE
+            pk_num = #{pkNum}
+          AND
+            deleted_yn = 'N'
+        ]]>
+    </update>
+
+    <delete id="deleteTrip" parameterType="int">
+        <![CDATA[
+        UPDATE
+            trip
+        SET
+            deleted_yn = 'Y'
+        WHERE
+            pk_num = #{pkNum}
+        ]]>
+    </delete>
+
+    <delete id="deleteFileByFilePk" parameterType="int">
+        <![CDATA[
+        UPDATE
+            file
+        SET
+            deleted_yn = 'Y'
+        WHERE
+            file_pk = #{filePk}
+        ]]>
+    </delete>
+
+    <update id="updateHitCnt" parameterType="int">
+        <![CDATA[
+        UPDATE
+            trip
+        SET
+            hit_cnt = hit_cnt + 1
+        WHERE
+            pk_num = #{pkNum}
+        ]]>
+    </update>
+
+    <select id="selectTripSkySeoulListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 1
+        ]]>
+    </select>
+    <select id="selectTripSkyIncheonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 2
+        ]]>
+    </select>
+    <select id="selectTripSkyDaejeonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 3
+        ]]>
+    </select>
+    <select id="selectTripSkyDaeguListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 4
+        ]]>
+    </select>
+    <select id="selectTripSkyGwangjuListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 5
+        ]]>
+    </select>
+    <select id="selectTripSkyBusanListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 6
+        ]]>
+    </select>
+    <select id="selectTripSkyUlsanListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 7
+        ]]>
+    </select>
+    <select id="selectTripSkySejongListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 8
+        ]]>
+    </select>
+    <select id="selectTripSkyGyeonggiListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 9
+        ]]>
+    </select>
+    <select id="selectTripSkyGangwonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 10
+        ]]>
+    </select>
+    <select id="selectTripSkyChungbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 11
+        ]]>
+    </select>
+    <select id="selectTripSkyChungnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 12
+        ]]>
+    </select>
+    <select id="selectTripSkyGyeongbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 13
+        ]]>
+    </select>
+    <select id="selectTripSkyGyeongnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 14
+        ]]>
+    </select>
+    <select id="selectTripSkyJeonbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 15
+        ]]>
+    </select>
+    <select id="selectTripSkyJeonnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 16
+        ]]>
+    </select>
+    <select id="selectTripSkyJejuListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 3
+          AND
+            trip_region_pk = 17
+        ]]>
+    </select>
+
+    <select id="selectTripMouSeoulListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 1
+        ]]>
+    </select>
+    <select id="selectTripMouIncheonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 2
+        ]]>
+    </select>
+    <select id="selectTripMouDaejeonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 3
+        ]]>
+    </select>
+    <select id="selectTripMouDaeguListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 4
+        ]]>
+    </select>
+    <select id="selectTripMouGwangjuListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 5
+        ]]>
+    </select>
+    <select id="selectTripMouBusanListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 6
+        ]]>
+    </select>
+    <select id="selectTripMouUlsanListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 7
+        ]]>
+    </select>
+    <select id="selectTripMouSejongListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 8
+        ]]>
+    </select>
+    <select id="selectTripMouGyeonggiListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 9
+        ]]>
+    </select>
+    <select id="selectTripMouGangwonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 10
+        ]]>
+    </select>
+    <select id="selectTripMouChungbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 11
+        ]]>
+    </select>
+    <select id="selectTripMouChungnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 12
+        ]]>
+    </select>
+    <select id="selectTripMouGyeongbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 13
+        ]]>
+    </select>
+    <select id="selectTripMouGyeongnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 14
+        ]]>
+    </select>
+    <select id="selectTripMouJeonbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 15
+        ]]>
+    </select>
+    <select id="selectTripMouJeonnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 16
+        ]]>
+    </select>
+    <select id="selectTripMouJejuListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 1
+          AND
+            trip_region_pk = 17
+        ]]>
+    </select>
+
+    <select id="selectTripSeaSeoulListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 1
+        ]]>
+    </select>
+    <select id="selectTripSeaIncheonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 2
+        ]]>
+    </select>
+    <select id="selectTripSeaDaejeonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 3
+        ]]>
+    </select>
+    <select id="selectTripSeaDaeguListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 4
+        ]]>
+    </select>
+    <select id="selectTripSeaGwangjuListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 5
+        ]]>
+    </select>
+    <select id="selectTripSeaBusanListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 6
+        ]]>
+    </select>
+    <select id="selectTripSeaUlsanListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 7
+        ]]>
+    </select>
+    <select id="selectTripSeaSejongListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 8
+        ]]>
+    </select>
+    <select id="selectTripSeaGyeonggiListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 9
+        ]]>
+    </select>
+    <select id="selectTripSeaGangwonListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 10
+        ]]>
+    </select>
+    <select id="selectTripSeaChungbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 11
+        ]]>
+    </select>
+    <select id="selectTripSeaChungnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 12
+        ]]>
+    </select>
+    <select id="selectTripSeaGyeongbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 13
+        ]]>
+    </select>
+    <select id="selectTripSeaGyeongnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 14
+        ]]>
+    </select>
+    <select id="selectTripSeaJeonbugListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 15
+        ]]>
+    </select>
+    <select id="selectTripSeaJeonnamListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 16
+        ]]>
+    </select>
+    <select id="selectTripSeaJejuListPage" resultType="com.bitc.gotrip.dto.TripDto">
+        <![CDATA[
+        SELECT
+            trip_category_pk, trip_region_pk, trip_name, trip_price, trip_contents, pk_num, trip_create, hit_cnt
+        FROM
+            trip
+        WHERE
+            deleted_yn = 'N'
+          AND
+            trip_category_pk = 2
+          AND
+            trip_region_pk = 17
+        ]]>
+    </select>
+
+    <insert id="insertMyLike" parameterType="hashmap" keyProperty="likePk" useGeneratedKeys="true">
+
+    <![CDATA[
+        INSERT INTO
+            my_like (trip_pk, member_id)
+        VALUES
+            (#{tripPk}, #{memberId})
+    ]]>
+</insert>
+
+
+    <delete id="deleteMyLike" parameterType="hashmap">
+
+    <![CDATA[
+    DELETE FROM my_like
+    WHERE
+        trip_pk = #{tripPk}
+      AND
+        member_id = #{memberId}
+    ]]>
+</delete>
+
+
+</mapper>

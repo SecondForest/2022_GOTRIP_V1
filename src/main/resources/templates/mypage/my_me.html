@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>title</title>
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table.type07 {
+      border-collapse: collapse;
+      text-align: left;
+      line-height: 60px;
+      border: 1px solid #ccc;
+      margin: 20px 10px;
+    }
+    table.type07 thead th {
+      padding: 10px;
+      font-weight: bold;
+      vertical-align: top;
+      color: #fff;
+    }
+    table.type07 tbody th {
+      width: 150px;
+      padding: 10px;
+      font-weight: bold;
+      vertical-align: top;
+      border-bottom: 1px solid #ccc;
+      background: #ecb9c6;
+    }
+    table.type07 td {
+      width: 350px;
+      padding: 10px;
+      vertical-align: top;
+      border-bottom: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+<div layout:fragment="content">
+  <nav class="navbar navbar-dark bg-danger" aria-label="First navbar example" style="font-family: 'Cafe24 Ohsquare'">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/member/myPage">My Page</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample01"
+              aria-controls="navbarsExample01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample01">
+        <ul class="navbar-nav me-auto mb-2">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/member/myReview">Review & QnA</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reserve/reserveList">예약 & 찜목록</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/member/myEdit">회원 정보 수정</a>
+          </li>
+          <th:block th:if="${user.getMemberId()} == 'admin'">
+          <li class="nav-item">
+            <a  class="nav-link" href="/tripItem">여행지 등록</a>
+          </li>
+          <li class="nav-item">
+            <a  class="nav-link" href="/tripList">여행지 관리</a>
+          </li>
+          </th:block>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container" style="font-family: 'Cafe24 Ohsquare air'">
+    <div class="my-3" style="font-family: 'Cafe24 Ohsquare'">
+      <div class="d-flex justify-content-center">
+        <h1>My Page</h1>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center" style="height: 390px">
+    <table class="type07">
+      <tbody>
+      <tr>
+        <th scope="row">ID</th>
+        <td th:text="${user.getMemberId()}"></td>
+      </tr>
+      <tr>
+        <th scope="row">Name</th>
+        <td th:text="${user.getMemberName()}"></td>
+      </tr>
+      <tr>
+        <th scope="row">주소</th>
+        <td th:text="${user.getMemberAddr()}"></td>
+      </tr>
+      <tr>
+        <th scope="row">Phone</th>
+        <td th:text="${user.getMemberPhone()}"></td>
+      </tr>
+      <tr>
+        <th scope="row">Email</th>
+        <td th:text="${user.getMemberEmail()}"></td>
+      </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

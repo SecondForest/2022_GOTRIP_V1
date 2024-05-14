@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="UTF-8">
+  <title>여행 어때?</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    ul.tabs {
+      margin: 0px;
+      padding: 0px;
+      list-style: none;
+    }
+
+    ul.tabs li {
+      background: none;
+      color: #222;
+      display: inline-block;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
+    ul.tabs li.current {
+      background: #ededed;
+      color: #222;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 15px;
+    }
+
+    .tab-content.current {
+      display: inherit;
+    }
+    a {
+        text-decoration: none;
+    }
+  </style>
+  <script>
+    $(document).ready(function () {
+
+      $('ul.tabs li').click(function () {
+        var tab_id = $(this).attr('data-tab');
+
+        $('ul.tabs li').removeClass('current');
+        $('.tab-content').removeClass('current');
+
+        $(this).addClass('current');
+        $("#" + tab_id).addClass('current');
+      });
+
+    });
+  </script>
+
+</head>
+
+<body>
+<div class="containter">
+  <div layout:fragment="content" class="py-1">
+
+    <!-- Carousel -->
+    <div id="demo" class="carousel slide container" data-bs-ride="carousel">
+
+      <!-- Indicators/dots -->
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+      </div>
+
+      <!-- The slideshow/carousel -->
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <a href="sky">
+            <img src="/image/sky.jpg" alt="Los Angeles" class="d-block w-100" style="height:500px">
+          </a>
+          <div class="carousel-caption">
+            <h3>하늘</h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <a href="mou">
+            <img src="/image/mountain.jpg" alt="Chicago" class="d-block w-100" style="height:500px">
+          </a>
+          <div class="carousel-caption">
+            <h3>산 </h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <a href="sea">
+            <img src="/image/beach.jpg" alt="New York" class="d-block w-100" style="height:500px">
+          </a>
+          <div class="carousel-caption">
+            <h3>바다</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Left and right controls/icons -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+    <div class="d-flex container mt-3">
+      <h5 style="font-family: 'Cafe24 Ohsquare'">
+        회원 추천 Best 3
+      </h5>
+    </div>
+    <div class="d-flex container py-3 justify-content-center">
+      <div class="row">
+        <th:block th:if="${#lists.size(dataList.getList())} > 0" th:each="list : ${dataList.getList()}">
+          <div class="col-md-4 margin">
+            <div class="card">
+              <a href="/tripDetail?pkNum=" th:attrappend="href=${list.pkNum}" class="text-dark">
+                <th:blcok th:each="item : ${list.fileList}">
+                  <img th:src="'/res/' + ${item.storedFilePath}" class="card-img-top"
+                       th:alt="${list.tripName}" height="270">
+                </th:blcok>
+                <div class="card-body">
+                  <h4 class="card-title">
+                    <a href="/tripDetail?pkNum=" th:attrappend="href=${list.pkNum}" th:text="${list.tripName}"/>
+                  </h4>
+                  <h3 class="card-title text-danger">
+                    [[${list.tripPrice}]]원</h3>
+                </div>
+              </a>
+            </div>
+          </div>
+        </th:block>
+      </div>
+    </div>
+    <div class="d-flex container mb-3">
+      <h5 style="font-family: 'Cafe24 Ohsquare'">
+        게시판 목록
+      </h5>
+    </div>
+    <div class="container">
+      <ul class="tabs">
+        <li class="tab-link current" data-tab="tab-1">Review</li>
+        <li class="tab-link" data-tab="tab-2">QnA</li>
+      </ul>
+
+      <div id="tab-1" class="tab-content current">
+        <div class="container mt-3">
+          <table class="table table-hover table-striped">
+            <colgroup>
+              <col width="15%">
+              <col width="*">
+              <col width="15%">
+              <col width="20%">
+            </colgroup>
+            <thead>
+            <tr class="text-center">
+              <th>글번호</th>
+              <th>제목</th>
+              <th>여행지</th>
+              <th>작성일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="text-center" th:if="${#lists.size(reviewList.getList())} > 0"
+                th:each="item: ${reviewList.getList()}">
+              <td th:text="${item.reviewPk}"></td>
+              <td class="text-start">
+                <a class="text-decoration-none text-blank" href="/review/boardDetail?reviewPk="
+                   th:attrappend="href=${item.reviewPk}" th:text="${item.reviewTitle}"></a>
+              </td>
+              <td th:text="${item.tripPk}"></td>
+              <td th:text="${item.reviewCreate}"></td>
+            </tr>
+            <tr th:unless="${#lists.size(reviewList.getList())} > 0">
+              <td colspan="4">데이터가 없습니다.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="tab-2" class="tab-content">
+        <table class="table table-hover table-striped">
+          <colgroup>
+            <col width="15%">
+            <col width="*">
+            <col width="20%">
+          </colgroup>
+          <thead>
+          <tr class="text-center">
+            <th>글번호</th>
+            <th>제목</th>
+            <th>작성일</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="text-center" th:if="${#lists.size(qnaList.getList())} > 0" th:each="item: ${qnaList.getList()}">
+            <td th:text="${item.qnaPk}"></td>
+
+            <td class="text-start" th:if="${item.reLev} > 0">
+              <i class="bi bi-arrow-return-right"></i>
+              <a class="text-decoration-none text-blank" href="/qna/boardDetail?qnaPk="
+                 th:attrappend="href=${item.qnaPk}" th:text="${item.qnaTitle}"></a>
+            </td>
+            <td class="text-start" th:unless="${item.reLev} > 0">
+              <a class="text-decoration-none text-blank" href="/qna/boardDetail?qnaPk="
+                 th:attrappend="href=${item.qnaPk}" th:text="${item.qnaTitle}"></a>
+            </td>
+            <td th:text="${item.qnaCreate}"></td>
+          </tr>
+          <tr th:unless="${#lists.size(qnaList.getList())} > 0">
+            <td colspan="4">데이터가 없습니다.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

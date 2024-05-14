@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>title</title>
+  <!-- CSS only -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div layout:fragment="content">
+  <form id="frm" method="post" action="/reserve/insertReserve">
+    <div class="container">
+      <h1>여행 어때?</h1>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="tripName" name="tripName" placeholder="여행지" th:value="${trip.getTripName()}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="tripRegion" name="tripRegion" placeholder="예약 장소" th:value="${tripRegion}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="tripCategory" name="tripCategory" placeholder="테마" th:value="${tripCategory}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="reserveStart" name="reserveStart" placeholder="예약시작일" th:value="${reserveStart}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="reserveEnd" name="reserveEnd" placeholder="예약종료일" th:value="${reserveEnd}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="reserveNum" name="reserveCount" placeholder="인원수" th:value="${reserveCount}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="tel" class="form-control" id="reserveId" name="memberId" placeholder="예약자이름" th:value="${member.getMemberName()}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="tel" class="form-control" id="reservePhone" name="memberPhone" placeholder="예약자휴대전화" th:value="${member.getMemberPhone()}" readonly>
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="userName" name="userName" placeholder="사용자이름">
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="tel" class="form-control" id="userPhone" name="userPhone" placeholder="사용자휴대전화">
+      </div>
+      <div class="form-group">
+        <label></label>
+        <input type="text" class="form-control" id="tripPrice" name="reservePrice" placeholder="금액" th:value="${trip.getTripPrice()}*${reserveCount}" readonly>
+<!--        <input type="text" class="form-control" id="tripPrice" name="tripPrice" placeholder="금액" th:value="trip_price * reserve">-->
+      </div>
+      <input type="hidden" name="tripRegionPk" th:value="${trip.getTripRegionPk()}">
+      <input type="hidden" name="tripCategoryPk" th:value="${trip.getTripCategoryPk()}">
+      <input type="hidden" name="tripPk" th:value="${tripPk}">
+      <button type="submit" class="btn btn-primary my-3">예약하기</button>
+    </div>
+  </form>
+</div>
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

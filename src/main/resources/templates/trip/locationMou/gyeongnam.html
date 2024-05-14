@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Title</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+      a {
+          text-decoration: none;
+      }
+  </style>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container">
+
+    <!-- Carousel -->
+    <div id="demo" class="carousel slide" data-bs-ride="carousel">
+
+      <!-- Indicators/dots -->
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+      </div>
+
+      <!-- The slideshow/carousel -->
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <a href="sky">
+            <img src="/image/sky.jpg" alt="Los Angeles" class="d-block w-100" style="height:400px">
+          </a>
+          <div class="carousel-caption">
+            <h3>하늘 테마</h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <a href="mou">
+            <img src="/image/mountain.jpg" alt="Chicago" class="d-block w-100" style="height:400px">
+          </a>
+          <div class="carousel-caption">
+            <h3>산 테마</h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <a href="sea">
+            <img src="/image/beach.jpg" alt="New York" class="d-block w-100" style="height:400px">
+          </a>
+          <div class="carousel-caption">
+            <h3>바다 테마</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Left and right controls/icons -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+
+
+
+    <div class="d-flex justify-content-center mt-3">
+      <ul class="list-group list-group-horizontal">
+        <a href="seoul">
+          <li class="list-group-item">서울</li>
+        </a>
+        <a href="incheon">
+          <li class="list-group-item">인천</li>
+        </a>
+        <a href="daejeon">
+          <li class="list-group-item">대전</li>
+        </a>
+        <a href="daegu">
+          <li class="list-group-item">대구</li>
+        </a>
+        <a href="gwangju">
+          <li class="list-group-item">광주</li>
+        </a>
+        <a href="busan">
+          <li class="list-group-item">부산</li>
+        </a>
+        <a href="ulsan">
+          <li class="list-group-item">울산</li>
+        </a>
+        <a href="sejong">
+          <li class="list-group-item">세종</li>
+        </a>
+        <a href="gyeonggi">
+          <li class="list-group-item">경기</li>
+        </a>
+      </ul>
+    </div>
+    <div class="d-flex justify-content-center">
+      <ul class="list-group list-group-horizontal">
+        <a href="gangwon">
+          <li class="list-group-item">강원</li>
+        </a>
+        <a href="chungbug">
+          <li class="list-group-item">충북</li>
+        </a>
+        <a href="chungnam">
+          <li class="list-group-item">충남</li>
+        </a>
+        <a href="gyeongbug">
+          <li class="list-group-item">경북</li>
+        </a>
+        <a href="gyeongnam">
+          <li class="list-group-item">경남</li>
+        </a>
+        <a href="jeonbug">
+          <li class="list-group-item">전북</li>
+        </a>
+        <a href="jeonnam">
+          <li class="list-group-item">전남</li>
+        </a>
+        <a href="jeju">
+          <li class="list-group-item">제주</li>
+        </a>
+        <a href="">
+          <li class="list-group-item">전체</li>
+        </a>
+      </ul>
+    </div>
+    <div class="d-flex justify-content-center mt-3 mb-3">
+      <p>산 여행지</p>
+    </div>
+
+    <div class="row">
+      <th:block th:if="${#lists.size(dataList.getList())} > 0" th:each="list : ${dataList.getList()}">
+
+            <div class="col-md-4 margin">
+              <div class="card">
+                <a href="/tripDetail?pkNum=" th:attrappend="href=${list.pkNum}" class="text-dark">
+                  <th:blcok th:each="item : ${list.fileList}">
+                    <img th:src="'/res/' + ${item.storedFilePath}" class="card-img-top"
+                         th:alt="${list.tripName}" height="400">
+                  </th:blcok>
+                  <div class="card-body">
+                    <h4 class="card-title">
+                      <a href="/tripDetail?pkNum=" th:attrappend="href=${list.pkNum}" th:text="${list.tripName}"/>
+                    </h4>
+                    <h3 class="card-title text-danger">
+                      [[${list.tripPrice}]]원</h3>
+                  </div>
+                </a>
+              </div>
+            </div>
+      </th:block>
+    </div>
+    <nav>
+      <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item" th:classappend="${dataList.getPrePage() == 0} ? 'disabled'">
+          <a class="page-link" th:href="@{/gyeongnam(pageNum=${dataList.getPrePage()})}">Prev</a>
+        </li>
+        <li class="page-item"
+            th:each="item : ${#numbers.sequence(dataList.getNavigateFirstPage(), dataList.getNavigateLastPage())}"
+            th:classappend="${item == dataList.getPageNum()} ? 'active'">
+          <a class="page-link" th:text="${item}" th:href="@{/gyeongnam(pageNum=${item})}"></a>
+        </li>
+        <li class="page-item" th:classappend="${dataList.getNextPage() == 0} ? 'disabled'">
+          <a class="page-link" th:href="@{/gyeongnam(pageNum=${dataList.getNextPage()})}">Next</a>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

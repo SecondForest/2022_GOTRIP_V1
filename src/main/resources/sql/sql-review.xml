@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bitc.gotrip.mapper.ReviewMapper">
+
+    <select id="selectBoardListPage" resultType="com.bitc.gotrip.dto.ReviewDto">
+        <![CDATA[
+--             SELECT review_pk, trip_pk, member_id, reserve_pk, review_title, review_create, re_ref, re_lev, re_seq
+            SELECT review_pk, trip_pk, member_id, reserve_pk, review_title, review_create
+            FROM review_board
+            WHERE deleted_yn = 'N'
+            ORDER BY review_pk DESC
+        ]]>
+    </select>
+
+    <select id="selectBoardListPageById" resultType="com.bitc.gotrip.dto.ReviewDto">
+        <![CDATA[
+        SELECT review_pk, trip_pk, member_id, reserve_pk, review_title, review_create
+        FROM review_board
+        WHERE deleted_yn = 'N'
+        AND member_id = #{memberId}
+        ORDER BY review_pk DESC
+        ]]>
+    </select>
+
+    <insert id="insertBoard" parameterType="com.bitc.gotrip.dto.ReviewDto" useGeneratedKeys="true" keyProperty="reviewPk">
+        <![CDATA[
+            INSERT INTO review_board (trip_pk, trip_name, member_id, reserve_pk, review_title, review_contents, review_score, review_create)
+            VALUES (#{tripPk}, #{tripName}, #{memberId}, #{reservePk}, #{reviewTitle}, #{reviewContents},#{reviewScore}, NOW())
+        ]]>
+    </insert>
+
+    <insert id="insertBoardFileList" parameterType="com.bitc.gotrip.dto.FileDto">
+        <![CDATA[
+            INSERT INTO file (table_num, pk_num, original_file_name, stored_file_path, file_size)
+            VALUES
+        ]]>
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.tableNum},
+            #{item.pkNum},
+            #{item.originalFileName},
+            #{item.storedFilePath},
+            #{item.fileSize}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectBoardDetail" resultType="com.bitc.gotrip.dto.ReviewDto" parameterType="int">
+        <![CDATA[
+        SELECT review_pk, reserve_pk, trip_pk, trip_name, member_id, review_title, review_contents, review_score, review_create
+        FROM review_board
+        WHERE review_pk = #{reviewPk}
+          AND deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <select id="selectBoardFileList" parameterType="int" resultType="com.bitc.gotrip.dto.FileDto">
+        <![CDATA[
+        SELECT file_pk, table_num, pk_num, original_file_name, stored_file_path, FORMAT(ROUND(file_size / 1024), 0) AS file_size, deleted_yn
+        FROM file
+        WHERE table_num = 1
+        AND pk_num = #{reviewPk}
+        AND deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <update id="updateBoard" parameterType="com.bitc.gotrip.dto.ReviewDto">
+        <![CDATA[
+            UPDATE review_board
+            SET review_title = #{reviewTitle}, review_contents = #{reviewContents}, review_score = #{reviewScore}, review_create = NOW()
+            WHERE review_pk = #{reviewPk}
+            AND deleted_yn = 'N'
+        ]]>
+    </update>
+
+    <delete id="deleteBoard" parameterType="int">
+        <![CDATA[
+            UPDATE review_board
+            SET deleted_yn = 'Y'
+            WHERE review_pk= #{reviewPk}
+        ]]>
+    </delete>
+
+    <delete id="deleteFiles" parameterType="int">
+        <![CDATA[
+            UPDATE file
+            SET deleted_yn = 'Y'
+            WHERE pk_num = #{reviewPk}
+            AND table_num = 1
+        ]]>
+    </delete>
+
+    <delete id="deleteFileByFilePk" parameterType="int">
+        <![CDATA[
+            UPDATE file
+            SET deleted_yn = 'Y'
+            WHERE file_pk = #{filePk}
+        ]]>
+    </delete>
+
+</mapper>

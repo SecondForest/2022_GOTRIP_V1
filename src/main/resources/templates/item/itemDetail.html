@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Title</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+        integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+          crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div layout:fragment="content">
+
+  <nav class="navbar navbar-dark bg-danger" aria-label="First navbar example" style="font-family: 'Cafe24 Ohsquare'">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/member/myPage">My Page</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample01"
+              aria-controls="navbarsExample01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample01">
+        <ul class="navbar-nav me-auto mb-2">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/member/myReview">Review & QnA</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reserve/reserveList">예약 & 찜목록</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/member/myEdit">회원 정보 수정</a>
+          </li>
+          <li class="nav-item">
+            <a  class="nav-link" href="/tripItem">여행지 등록</a>
+          </li>
+          <li class="nav-item">
+            <a  class="nav-link" href="/tripList">여행지 관리</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+<div class="container mt-5">
+  <h2>여행지 수정하기</h2>
+
+  <form id="frm" method="post" enctype="multipart/form-data">
+    <table class="board_detail table table-borderless">
+      <tbody>
+      <tr>
+        <th scope="row">글 번호</th>
+        <td >
+          <input type="text" id="trip-pk" name="pkNum" th:value="${trip.pkNum}">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">제목</th>
+        <td colspan="3">
+          <input type="text" id="trip-name" name="tripName" th:value="${trip.tripName}">
+        </td>
+      </tr>
+      여행지 테마 번호 1: 산 2: 바다 3: 하늘
+      <p>ex) 여행지역 번호 선택<br>
+        서울: 1 인천: 2 대전: 3 대구: 4 광주: 5 부산: 6 울산: 7 세종: 8 경기: 9<br>
+        강원: 10 충북: 11 충남: 12 경북: 13 경남: 14 전북: 15 전남: 16 제주: 17</p>
+      <tr>
+        <th scope="row">테마</th>
+        <td colspan="3">
+          <input type="text" id="trip-category-pk" name="tripCategoryPk" th:value="${trip.tripCategoryPk}">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">지역</th>
+        <td colspan="3">
+          <input type="text" id="trip-region-pk" name="tripRegionPk" th:value="${trip.tripRegionPk}">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">가격</th>
+        <td colspan="3">
+          <input type="text" id="trip-price" name="tripPrice" th:value="${trip.tripPrice}">
+        </td>
+      </tr>
+        <tr>
+        <th scope="row">위도</th>
+        <td colspan="3">
+          <input type="text" id="trip-latitude" name="tripLatitude" th:value="${trip.tripLatitude}">
+        </td>
+        </tr>
+        <tr>
+        <th scope="row">경도</th>
+        <td colspan="3">
+          <input type="text" id="trip-hardness" name="tripHardness" th:value="${trip.tripHardness}">
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">내용</th>
+        <td colspan="4" class="view_text">
+          <textarea name="tripContents" id="trip-contents" title="내용" cols="30" rows="10" th:text="${trip.tripContents}"></textarea>
+        </td>
+      </tr>
+
+    </table>
+    <ul class="list-group old-file-container" th:if="${#lists.size(trip.fileList)} > 0" th:each="item : ${trip.fileList}">
+      <li class="list-group-item old-file-item">
+        <span th:text="|${item.originalFileName}(${item.fileSize}kb)|">파일</span>
+        <i class="bi bi-x-circle delete-old-file">
+          <input type="hidden" th:value="${item.filePk}" >
+        </i>
+      </li>
+    </ul>
+    <input type="hidden" id="deleteOldFile" name="deleteFileList">
+    <ul class="list-group old-file-container" th:unless="${#lists.size(trip.fileList)} > 0">
+      <li class="list-group-item">파일이 없습니다.</li>
+    </ul>
+    <input type="button" value="첨부파일 추가" class="btn" id="btnAddFile">
+    <ul class="new-file-container">
+
+    </ul>
+  </form>
+  <div class="mb-5">
+  <button type="button" id="list" class="btn btn-primary">목록으로</button>
+  <button type="button" id="edit" class="btn btn-primary">수정하기</button>
+  <button type="button" id="delete" class="btn btn-primary">삭제하기</button>
+  </div>
+</div>
+
+<script th:inline="javascript">
+    let fileList= [];
+    $(document).ready(function() {
+        $("#list").on("click", function() {
+            location.href = "tripList";
+        });
+
+        $("#edit").on("click", function() {
+            var frm = $("#frm")[0];
+            frm.action = "tripUpdate";
+            if ([[${trip.fileList.size}]] == 0) {
+                frm.submit().attr(disabled)
+            }
+            frm.submit();
+        });
+
+        $("#delete").on("click", function() {
+            var frm = $("#frm")[0];
+            frm.action = "tripDeleteItem";
+            frm.submit();
+        });
+
+    $(".delete-old-file").on("click", function() {
+        let li = $(this);
+        let item = $(this).children("input");
+        fileList.push(item.val());                    // 첨부파일정보(filePk)전달
+        console.log(fileList);
+        $("#deleteOldFile").val(fileList.toString());
+        // alert(fileList);
+        li.closest('li.old-file-item').remove();
+        alert('이미지를 1개 이상 넣으세요')// 기본첨부파일정보 화면에서 삭제.
+
+    });
+
+    // 전역변수
+    let fileCount = localStorage.getItem('fileCount');
+    // 새로운 파일선택상자를 추가하는 클릭이벤트 연결
+    let btnAddFile = document.querySelector('#btnAddFile');
+    btnAddFile.addEventListener('click', (event) => {
+        if (fileCount >= 2) {
+            alert('첨부파일은 최대 2개까지만 첨부할 수 있습니다.');
+            return;
+        }
+
+        let str = `
+                    <li class="list-group-item new-file-item">
+                        <input type="file" name="originalFileName">
+                        <i id="btnDelFile" class="bi bi-x-circle delete-new-file"></i>
+                    </li>
+                    `;
+
+        let ul = document.querySelector('ul.new-file-container');
+        ul.innerHTML += str;
+
+        fileCount++;
+    });
+
+    // 새로 추가된 파일선택상자를 취소(삭제)하는 클릭이벤트 연결
+    let ulNewFileContainer = document.querySelector('ul.new-file-container');
+    // 동적 이벤트 연결하기. "i.delete-new-file" 동적 요소에 이벤트 연결
+    ulNewFileContainer.addEventListener('click', (event) => {
+        if (event.target.classList.contains('delete-new-file') == true) {
+            let iCancel = event.target;
+            iCancel.closest('li.new-file-item').remove();
+
+            fileCount--;
+        }
+    });
+
+    });
+</script>
+</div>
+</body>
+</html>

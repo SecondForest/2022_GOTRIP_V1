@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Title</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+          crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div layout:fragment="content">
+  <main class="container mt-1">
+    <section>
+      <form id="frm" method="post" enctype="multipart/form-data">
+        <article class="row">
+          <div class="col-md-8 mx-auto">
+
+            <div class="row my-2">
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text">여행지 이름</span>
+                  <input type="text" class="form-control" th:value="${review.tripName}" readonly>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="input-group">
+                  <span class="input-group-text">예약 번호</span>
+                  <input type="text" class="form-control" th:value="${review.reservePk}" readonly>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="input-group">
+                  <span class="input-group-text">평점</span>
+                  <input type="text" class="form-control" name="reviewScore" th:value="${review.reviewScore}">
+                </div>
+              </div>
+            </div>
+            <div class="row my-2">
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text">작성자</span>
+                  <input type="text" class="form-control" th:value="${review.memberId}" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text">작성일</span>
+                  <input type="text" class="form-control" th:value="${review.reviewCreate}" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="row my-2">
+              <div class="col-md">
+                <div class="input-group">
+                  <span class="input-group-text">제목</span>
+                  <input type="text" class="form-control" name="reviewTitle" th:value="${review.reviewTitle}">
+                </div>
+              </div>
+            </div>
+            <div class="row my-2">
+              <div class="col-md">
+                <div>
+                <textarea rows="10" class="form-control" name="reviewContents"
+                          th:text="${review.reviewContents}"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row my-2 carousel slide" data-bs-ride="carousel" th:if="${#lists.size(review.fileList)} > 0">
+              <div class="carousel-inner">
+                <th:block>
+                  <div class="carousel-item active" data-bs-interval="2000">
+                    <img th:src="'/res/'+ ${review.fileList[0].storedFilePath}" alt="리뷰사진" class="d-block"
+                         style="width:100px">
+                  </div>
+                </th:block>
+
+                <th:block th:if="${review.fileList.size} >= 2" >
+                  <div class="carousel-item" data-bs-interval="2000">
+                    <img th:src="'/res/'+ ${review.fileList[1].storedFilePath}" alt="리뷰사진2" class="d-block"
+                         style="width:100px">
+                  </div>
+                </th:block>
+              </div>
+            </div>
+            <div class="row my-2" th:unless="${#lists.size(review.fileList)} > 0">
+            </div>
+            <div class="row my-2">
+              <div class="col-md">
+                <ul class="list-group old-file-container" th:if="${#lists.size(review.fileList)} > 0"
+                    th:each="item : ${review.fileList}">
+                  <li class="list-group-item old-file-item">
+                    <span th:text="|${item.originalFileName}(${item.fileSize}kb)|">파일</span>
+                    <i class="bi bi-x-circle delete-old-file">
+                      <input type="hidden" th:value="${item.filePk}">
+                    </i>
+                  </li>
+                </ul>
+                <input type="hidden" id="deleteOldFile" name="deleteFileList">
+                <ul class="list-group old-file-container" th:unless="${#lists.size(review.fileList)} > 0">
+                  <li class="list-group-item">파일이 없습니다.</li>
+                </ul>
+                <input type="button" value="첨부파일 추가" class="btn" id="btnAddFile">
+                <ul class="new-file-container">
+
+                </ul>
+
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="row my-3">
+          <div class="col-md-8 mx-auto">
+            <div class="d-flex">
+              <input type="hidden" name="reviewPk" th:value="${review.reviewPk}">
+              <button type="button" id="btn-list" class="btn btn-secondary me-auto">목록</button>
+              <th:block th:if="${memberId} == ${review.memberId}">
+                <button type="button" id="btn-edit" class="btn btn-warning">수정</button>
+                <button type="button" id="btn-delete" class="btn btn-danger ms-2">삭제</button>
+              </th:block>
+
+            </div>
+          </div>
+        </article>
+      </form>
+    </section>
+  </main>
+  <!--    <footer th:replace="fragments/footer::footer"></footer>-->
+
+  <script>
+    let fileList = [];
+    $(document).ready(function () {
+      // 목록, 수정, 삭제 버튼 연결
+      $("#btn-list").on("click", function () {
+        location.href = "boardList";
+      });
+      $("#btn-edit").on("click", function () {
+        let frm = $("#frm")[0];
+        frm.action = "updateBoard";
+        frm.submit();
+      });
+      $("#btn-delete").on("click", function () {
+        let frm = $("#frm")[0];
+        frm.action = "deleteBoard";
+        frm.submit();
+      });
+
+      // 기존 첨부파일 삭제버튼 이벤트 연결(첨부파일정보(filePk)전달 및
+      $(".delete-old-file").on("click", function () {
+        let li = $(this);
+        let item = $(this).children("input");
+        fileList.push(item.val());                    // 첨부파일정보(filePk)전달
+        console.log(fileList);
+        $("#deleteOldFile").val(fileList.toString());
+        li.closest('li.old-file-item').remove();// 기본첨부파일정보 화면에서 삭제.
+
+        //ajax 호출
+        // $.ajax({
+        //     url         :   "/review/boardFileDelete",
+        //     dataType    :   "json",
+        //     type        :   "post",
+        //     data        :   {fileList: fileList},
+        //     success     :   function(data) {
+        //         console.log(data);
+        //     },
+        //     error       :   function(request, status, error){
+        //         console.log("AJAX_ERROR");
+        //     }
+        // });
+        $.ajax({
+          url: "/review/boardFileDelete",
+          type: "post",
+          data: {fileList: fileList},
+          success: function (data) {
+            console.log(data);
+          },
+          error: function (request, status, error) {
+            console.log("AJAX_ERROR");
+          }
+        });
+      });
+
+      // 전역변수
+      let fileCount = localStorage.getItem('fileCount');
+      // 새로운 파일선택상자를 추가하는 클릭이벤트 연결
+      let btnAddFile = document.querySelector('#btnAddFile');
+      btnAddFile.addEventListener('click', (event) => {
+        if (fileCount >= 2) {
+          alert('첨부파일은 최대 2개까지만 첨부할 수 있습니다.');
+          return;
+        }
+
+        let str = `
+                    <li class="list-group-item new-file-item">
+                        <input type="file" name="originalFileName">
+                        <i id="btnDelFile" class="bi bi-x-circle delete-new-file"></i>
+                    </li>
+                    `;
+
+        let ul = document.querySelector('ul.new-file-container');
+        ul.innerHTML += str;
+
+        fileCount++;
+      });
+
+      // 새로 추가된 파일선택상자를 취소(삭제)하는 클릭이벤트 연결
+      let ulNewFileContainer = document.querySelector('ul.new-file-container');
+      // 동적 이벤트 연결하기. "i.delete-new-file" 동적 요소에 이벤트 연결
+      ulNewFileContainer.addEventListener('click', (event) => {
+        if (event.target.classList.contains('delete-new-file') == true) {
+          let iCancel = event.target;
+          iCancel.closest('li.new-file-item').remove();
+
+          fileCount--;
+        }
+      });
+
+    });
+  </script>
+</div>
+</body>
+</html>

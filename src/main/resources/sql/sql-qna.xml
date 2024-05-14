@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bitc.gotrip.mapper.QnAMapper">
+
+    <select id="selectBoardListPage" resultType="com.bitc.gotrip.dto.QnADto">
+        <![CDATA[
+            SELECT qna_pk, member_id, qna_title, qna_create, re_ref, re_lev, re_seq
+            FROM qna_board
+            WHERE deleted_yn = 'N'
+            ORDER BY qna_pk ASC
+        ]]>
+    </select>
+
+    <select id="selectBoardListPageById" resultType="com.bitc.gotrip.dto.QnADto">
+        <![CDATA[
+        SELECT qna_pk, member_id, qna_title, qna_create, re_ref, re_lev, re_seq
+        FROM qna_board
+        WHERE deleted_yn = 'N'
+        AND member_id = #{memberId}
+        ORDER BY qna_pk ASC
+        ]]>
+    </select>
+
+    <insert id="insertBoard" parameterType="com.bitc.gotrip.dto.QnADto" useGeneratedKeys="true" keyProperty="qnaPk">
+        <![CDATA[
+            INSERT INTO qna_board (member_id, qna_title, qna_contents, qna_create, re_ref, re_lev, re_seq)
+            VALUES (#{memberId}, #{qnaTitle}, #{qnaContents}, NOW(), #{reRef}, #{reLev}, #{reSeq})
+        ]]>
+    </insert>
+
+    <select id="selectQnaPk" resultType="int">
+        <![CDATA[
+            SELECT qna_Pk
+            FROM qna_board
+            WHERE deleted_yn = 'N'
+            ORDER BY qna_pk DESC
+            LIMIT 1
+        ]]>
+    </select>
+
+    <update id="updateReRef" parameterType="int">
+        <![CDATA[
+        UPDATE qna_board
+        SET re_ref = #{qnaPk}
+        WHERE qna_pk = #{qnaPk}
+          AND deleted_yn = 'N'
+        ]]>
+    </update>
+
+<!--    <insert id="insertBoardReply" parameterType="com.bitc.gotrip.dto.QnADto" useGeneratedKeys="true" keyProperty="qnaPk">-->
+<!--        <![CDATA[-->
+<!--        INSERT INTO qna_board (member_id, qna_title, qna_contents, qna_create, re_ref, re_lev, re_seq)-->
+<!--        VALUES (#{memberId}, #{qnaTitle}, #{qnaContents}, NOW(), #{reRef}, #{reLev}, #{reSeq})-->
+<!--        ]]>-->
+<!--    </insert>-->
+
+    <select id="selectBoardListByQnaPk" resultType="com.bitc.gotrip.dto.QnADto" parameterType="int">
+        <![CDATA[
+        SELECT qna_pk, member_id, qna_title, qna_create, re_ref, re_lev, re_seq
+        FROM qna_board
+        WHERE deleted_yn = 'N'
+        AND re_ref = #{qnaPk}
+        ORDER BY qna_pk ASC
+        ]]>
+    </select>
+
+    <select id="selectBoardDetail" resultType="com.bitc.gotrip.dto.QnADto" parameterType="int">
+        <![CDATA[
+        SELECT qna_pk, member_id, qna_title, qna_contents, qna_create, re_ref, re_lev, re_seq
+        FROM qna_board
+        WHERE qna_pk = #{qnaPk}
+          AND deleted_yn = 'N'
+        ]]>
+    </select>
+
+    <update id="updateBoard" parameterType="com.bitc.gotrip.dto.QnADto">
+        <![CDATA[
+            UPDATE qna_board
+            SET qna_title = #{qnaTitle}, qna_contents = #{qnaContents}, qna_create = NOW()
+            WHERE qna_pk = #{qnaPk}
+            AND deleted_yn = 'N'
+        ]]>
+    </update>
+
+    <delete id="deleteBoard" parameterType="int">
+        <![CDATA[
+            UPDATE qna_board
+            SET deleted_yn = 'Y'
+            WHERE qna_pk= #{qnaPk}
+        ]]>
+    </delete>
+
+</mapper>
